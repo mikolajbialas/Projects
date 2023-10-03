@@ -6,6 +6,8 @@ Hi, I am Mikołaj Białaś creator of Password Manager. Below are instructions o
 You need to add environment variables before running the program. To do this you need to find the "Edit configurations..." button. , which is located under the selected configuration. And then go to the environment variables and change the values of ICON and PASSWORD_FILE_PATH.
 In the value for ICON you specify the path to the file 'pm_icon.ico'.
 In the value for PASSWORD_FILE_PATH you specify the path where you want to save your passwords.
+In the value for PYTHON_MAIL you will need to add your gmail address.
+In the vale for EMAIL_PASSWORD you will need to add generated gmail password. You can find out more about generating passwords here "https://www.youtube.com/watch?v=hXiPshHn9Pw&ab_channel=TweakLibrary".
 
 
 ## About Password Manager

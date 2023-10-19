@@ -1,12 +1,14 @@
 # =============================================================================
 #                                Libraries
 # =============================================================================
+import tkinter
 from tkinter import *
 from tkinter import messagebox
 import os
 import json
 import smtplib
 from email.message import EmailMessage
+from typing import Dict, Union
 
 # =============================================================================
 #                             Global Variables
@@ -21,8 +23,12 @@ email_password = os.environ.get("EMAIL_PASSWORD")
 # =============================================================================
 #                                Functions
 # =============================================================================
-# Function which sends email to declared user email
-def send_email():
+def send_email() -> None:
+    """
+    The function takes from data user_email and log_in_psw. Then send email with password to user mail.
+
+    :return: None
+    """
     global python_email
     global email_password
 
@@ -44,7 +50,14 @@ Have a nice day! - MB '''.format(data['log_in_psw']))
         messagebox.showinfo(title='Error', message=f'{e}')
 
 
-def save_data(path, data_arg):
+def save_data(path: str, data_arg: Dict) -> None:
+    """
+    The function saves existing data
+
+    :param path: str
+    :param data_arg: Dict
+    :return: None
+    """
     try:
         with open(path, 'w') as f:
             data_json = json.dumps(data_arg, separators=(',', ':'))
@@ -54,8 +67,12 @@ def save_data(path, data_arg):
         messagebox.showerror(title="Error", message=f"Cannot save the data file!")
 
 
-# Loading data if exist
-def load_data():
+def load_data() -> None:
+    """
+    The function loads existing data. If data doesn't exist it create variable data which is empty dictionary
+
+    :return: None
+    """
     global data
     try:
         with open(passwords_file_path, 'r') as f:
@@ -68,7 +85,13 @@ def load_data():
 
 
 # Check password - window
-def open_password_checking_window(button_name):
+def open_password_checking_window(button_name: str) -> None:
+    """
+    The function opens password checking window and user can entry password
+
+    :param button_name: str
+    :return: None
+    """
     check_password_window = Toplevel()
     check_password_window.iconbitmap(icon)
     check_password_window.geometry('220x120')
@@ -85,8 +108,15 @@ def open_password_checking_window(button_name):
     change_password_button.pack()
 
 
-# Checking password - if correct open root
-def check_password(log_in_input_arg, window):
+def check_password(log_in_input_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+    """
+    The function checks entered parameter log_in_input_arg and then decide whether open next window or show error
+
+    :param log_in_input_arg: tkinter.Entry
+    :param window: tkinter.Toplevel
+    :return: None
+    """
+
     log_in_input = log_in_input_arg.get()
 
     if not log_in_input == data['log_in_psw']:
@@ -109,7 +139,12 @@ def check_password(log_in_input_arg, window):
     window.destroy()
 
 
-def disable_all_buttons():
+def disable_all_buttons() -> None:
+    """
+    The function disable all buttons on root
+
+    :return: None
+    """
     b_choice_1.config(state="disabled")
     b_choice_2.config(state="disabled")
     b_choice_3.config(state="disabled")
@@ -122,8 +157,12 @@ def disable_all_buttons():
     b_choice_10.config(state="disabled")
 
 
-# Enable all buttons and disable button 0(Login button)
-def enable_all_buttons():
+def enable_all_buttons() -> None:
+    """
+    The unction enable all buttons except "Login" button on root
+
+    :return: None
+    """
     b_choice_0.config(state="disabled")
     b_choice_1.config(state="normal")
     b_choice_2.config(state="normal")
@@ -138,31 +177,57 @@ def enable_all_buttons():
 
 
 # Encrypt the given string - letter shift is variable: number
-def encrypt_string(string, number=225):
+def encrypt_string(string: str, number: int = 225) -> Union[str, None]:
+    """
+    The function take a string and then encrypt it and return encrypted string
+
+    :param string: str
+    :param number: int
+    :return: Union[str, None]
+    """
     encrypted_string = ''
     for word in string:
         for letter in word:
             shift = (ord(letter) - ord("!") + number) % 94
             encrypted_string += chr(shift + ord('!'))
 
-    return encrypted_string
+    if isinstance(string, str) and isinstance(number, int):
+        return encrypted_string
+    else:
+        return None
 
 
 # Decrypt the given string - letter shift is variable: number
-def decrypt_string(string, number=225):
+def decrypt_string(string: str, number: int = 225) -> Union[str, None]:
+    """
+    Function take an encrypted string and then decrypt it and return decrypted string
+
+    :param string: str
+    :param number: int
+    :return: Union[str, None]
+    """
     decrypted_string = ''
     for letter in string:
         shift = (ord(letter) - ord('!') - number) % 94
         decrypted_string += chr(shift + ord('!'))
 
-    return decrypted_string
+    if isinstance(string, str) and isinstance(number, int):
+        return decrypted_string
+    else:
+        return None
 
 
 # =============================================================================
 #                   DECIDE WHICH WINDOW SHOULD OPEN- Config
 # =============================================================================
 # If user already have set password open login window else open password_to_set_window
-def decide_set_or_entry():
+def decide_set_or_entry() -> None:
+    """
+    The function decides which function to open next. If 'data['log_in_psw']' and 'data['user_email']' are present,
+    it opens 'login_window()'. If not, it opens 'open_set_password_window()'
+
+    :return: None
+    """
     global data
     global password_check_window
     try:
@@ -183,7 +248,14 @@ def decide_set_or_entry():
 # =============================================================================
 #                         LOGIN WINDOW - Config
 # =============================================================================
-def login_window(password_check_window_arg):
+def login_window(password_check_window_arg: tkinter.Toplevel) -> None:
+    """
+    The function opens login window in which user can log in to password manager also they can click
+    forgot_password_button and password will be sent to given email
+
+    :param password_check_window_arg: tkinter.Toplevel
+    :return: None
+    """
     log_in_label = Label(password_check_window_arg, text='Enter a password')
     log_in_label.pack()
 
@@ -203,7 +275,13 @@ def login_window(password_check_window_arg):
 # =============================================================================
 #                         PASSWORD SET WINDOW - Config
 # =============================================================================
-def open_set_password_window(password_set_window):
+def open_set_password_window(password_set_window: tkinter.Toplevel) -> None:
+    """
+    The function opens window in which user enter password and email that they want to set
+
+    :param password_set_window: tkinter.Toplevel
+    :return: None
+    """
     password_set_label = Label(password_set_window, text='Set a password')
     password_set_label.pack()
 
@@ -222,8 +300,17 @@ def open_set_password_window(password_set_window):
     password_set_button.pack()
 
 
-# Write password and backup password into JSON file
-def set_password(password_set_input_arg, email_set_input_arg, window):
+# Write password and email into JSON file
+def set_password(password_set_input_arg: tkinter.Entry, email_set_input_arg: tkinter.Entry,
+                 window: tkinter.Toplevel) -> None:
+    """
+    The function takes entered parameters in open_set_password_window() function and then write them into .JSON file
+
+    :param password_set_input_arg: tkinter.Entry
+    :param email_set_input_arg: tkinter.Entry
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     global data
     password_set_input = password_set_input_arg.get()
     email_set_input = email_set_input_arg.get()
@@ -247,7 +334,12 @@ def set_password(password_set_input_arg, email_set_input_arg, window):
 #                    Change password (Option 1) - Config
 # =============================================================================
 # Change password - window after check password window
-def open_change_password_window():
+def open_change_password_window() -> None:
+    """
+    The function open window in which user enter new password and then open change_login_password() function
+
+    :return: None
+    """
     change_password_window_ac = Toplevel()
     change_password_window_ac.iconbitmap(icon)
     change_password_window_ac.geometry('220x120')
@@ -266,7 +358,14 @@ def open_change_password_window():
 
 
 # Change login password - function
-def change_login_password(new_password_arg, window):
+def change_login_password(new_password_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+    """
+    The function takes entered parameter(new_password_arg) and then change existing password to new_password_arg
+
+    :param new_password_arg: tkinter.Entry
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     global data
     new_password = new_password_arg.get()
     if new_password == '':
@@ -284,7 +383,12 @@ def change_login_password(new_password_arg, window):
 #                    Change email (Option 2) - Config
 # =============================================================================
 # Change email - window config - button 2 root
-def open_change_email_window():
+def open_change_email_window() -> None:
+    """
+    The function open window in which user enter new email and then open change_email() function
+
+    :return: None
+    """
     change_email_window = Toplevel()
     change_email_window.iconbitmap(icon)
     change_email_window.geometry('330x120')
@@ -302,7 +406,14 @@ def open_change_email_window():
 
 
 # Change email - function
-def change_email(new_email_arg, window):
+def change_email(new_email_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+    """
+    The function takes entered parameter(new_email_arg) and then change existing email to new_email_arg
+
+    :param new_email_arg: tkinter.Entry
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     global data
     new_email = new_email_arg.get()
     if new_email == '':
@@ -321,7 +432,12 @@ def change_email(new_email_arg, window):
 #                     Adding new data (Option 3) - Config
 # =============================================================================
 # Data window - configuration - button 3 root
-def open_new_data_window():
+def open_new_data_window() -> None:
+    """
+    The function open window in which user input new data and then opens add_new_data_to_database function
+
+    :return: None
+    """
     new_data_window = Toplevel(root)
     new_data_window.iconbitmap(icon)
     new_data_window.geometry('300x180')
@@ -349,7 +465,17 @@ def open_new_data_window():
     get_data_button.pack()
 
     # Adding new data to database
-    def add_new_data_to_database(site_input_arg, login_input_arg, password_input_arg, window):
+    def add_new_data_to_database(site_input_arg: tkinter.Entry, login_input_arg: tkinter.Entry,
+                                 password_input_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+        """
+        The function add taken parameters to database
+
+        :param site_input_arg: tkinter.Entry
+        :param login_input_arg: tkinter.Entry
+        :param password_input_arg: tkinter.Entry
+        :param window: tkinter.Toplevel
+        :return: None
+        """
         global data
         site = site_input_arg.get().lower()
         login = login_input_arg.get()
@@ -370,7 +496,12 @@ def open_new_data_window():
 #                         DELETE DATA (Option 4) - Config
 # =============================================================================
 # Delete window - configuration - button 4 root
-def open_delete_window():
+def open_delete_window() -> None:
+    """
+    The function opens a window in which the user can enter the site or app they want to delete
+
+    :return: None
+    """
     delete_window = Toplevel(root)
     delete_window.iconbitmap(icon)
     delete_window.geometry('350x100')
@@ -387,7 +518,14 @@ def open_delete_window():
 
 
 # Delete website from database
-def delete_website_data(site_input_arg, window):
+def delete_website_data(site_input_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+    """
+    The function deletes entered earlier (in open_delete_window) parameter from database
+
+    :param site_input_arg: tkinter.Entry
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     global data
     site = site_input_arg.get().lower()
     if site == '':
@@ -407,7 +545,12 @@ def delete_website_data(site_input_arg, window):
 #                    SHOW SITES OR APPS (Option 5) - Config
 # =============================================================================
 # Show available sites - button 5 root
-def show_sites():
+def show_sites() -> None:
+    """
+    The function shows messagebox of all sites whose in data
+
+    :return: None
+    """
     global data
     # Make list of sites without 'backup' and 'log_in_psw'
     sites = [x for x in data.keys() if (x != "user_email" and x != "log_in_psw")]
@@ -429,7 +572,12 @@ def show_sites():
 #                SEARCH LOGIN DATA BY WEBSITE (Option 6) - Config
 # =============================================================================
 # Search for password - configuration - button 6 root
-def open_search_login_details_by_site_window():
+def open_search_login_details_by_site_window() -> None:
+    """
+    The function open window in which user enter a name of app/site whose data wants to display
+
+    :return: None
+    """
     search_window = Toplevel(root)
     search_window.iconbitmap(icon)
     search_window.geometry('350x100')
@@ -446,7 +594,14 @@ def open_search_login_details_by_site_window():
 
 
 # Searching for data of available sites
-def search_info(site_input_arg, window):
+def search_info(site_input_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+    """
+    The function show data of entered app/site
+
+    :param site_input_arg: tkinter.Toplevel
+    :param window: tkinter.Entry
+    :return: None
+    """
     global data
 
     site = site_input_arg.get().lower()
@@ -478,7 +633,12 @@ def search_info(site_input_arg, window):
 #                CHANGE SITE OR APP DATA (Option 7) - Config
 # =============================================================================
 # Change login data - window configuration - button 7 root
-def open_check_site_window():
+def open_check_site_window() -> None:
+    """
+    The function open check site window in which user input web/app to change data
+
+    :return: None
+    """
     check_site_window = Toplevel(root)
     check_site_window.iconbitmap(icon)
     check_site_window.geometry('300x100')
@@ -495,7 +655,14 @@ def open_check_site_window():
 
 
 # Checking if site in data to open window to change data
-def check_if_site_in_data(check_site_arg, window):
+def check_if_site_in_data(check_site_arg: tkinter.Entry, window: tkinter.Toplevel) -> None:
+    """
+    The function checks if input site/app is in data and if it exists opens function select_data_from_the_list_window()
+
+    :param check_site_arg: tkinter.Entry
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     global data
 
     site_to_check = check_site_arg.get().lower()
@@ -513,8 +680,14 @@ def check_if_site_in_data(check_site_arg, window):
     window.destroy()
 
 
-# If one app/web has more than one login details, program will open this window
-def select_data_from_the_list_window(site_to_check):
+# Program ask user which data he wants to change
+def select_data_from_the_list_window(site_to_check: str) -> None:
+    """
+    The function opens window in which all existing data is displayed and then ask user which of data wants to change
+
+    :param site_to_check: str
+    :return: None
+    """
     select_data_window = Toplevel(root)
     select_data_window.iconbitmap(icon)
     select_data_window.title('Enter number from the list')
@@ -542,15 +715,23 @@ def select_data_from_the_list_window(site_to_check):
     select_input.pack()
 
     select_button = Button(select_data_window, text='Select',
-                           command=lambda: open_change_data_window(site_to_check, select_input.get(),
-                                                                   select_data_window))
+                           command=lambda: open_input_new_data_window(site_to_check, int(select_input.get()),
+                                                                      select_data_window))
     select_button.pack()
 
 
-# After checking if site is in data, we open change data window
-def open_change_data_window(site_to_check, selected_index, window):
+# After checking if site is in data, we open input new data window
+def open_input_new_data_window(site_to_check: str, selected_index: int, window: tkinter.Toplevel) -> None:
+    """
+    The function opens window in which user input new login and password
+
+    :param site_to_check: str
+    :param selected_index: int
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     try:
-        select = int(selected_index) - 1
+        select = selected_index - 1
         if 0 <= select < len(data[site_to_check]):
             change_data_window = Toplevel(root)
             change_data_window.iconbitmap(icon)
@@ -579,8 +760,19 @@ def open_change_data_window(site_to_check, selected_index, window):
         messagebox.showwarning(title='Error', message='Invalid input. Please enter a valid number.')
 
 
-# Changing existing data - after check if site in data
-def change_data(site_to_check, login_to_change_arg, password_to_change_arg, select, window):
+# Changing existing data - function configuration
+def change_data(site_to_check: str, login_to_change_arg: tkinter.Entry, password_to_change_arg: tkinter.Entry,
+                select: int, window: tkinter.Toplevel) -> None:
+    """
+    The function takes given parameters, makes them variable and change existing data against the variables
+
+    :param site_to_check: str
+    :param login_to_change_arg: tkinter.Entry
+    :param password_to_change_arg: tkinter.Entry
+    :param select: int
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     global data
     login_to_change = login_to_change_arg.get()
     password_to_change = password_to_change_arg.get()
@@ -599,7 +791,12 @@ def change_data(site_to_check, login_to_change_arg, password_to_change_arg, sele
 #                CLEAR DATABASE (Option 8) - Config
 # =============================================================================
 # Clear database - popup configuration
-def clear_database_popup():
+def clear_database_popup() -> None:
+    """
+    The function opens popup which ask if user wants to delete database
+
+    :return: None
+    """
     global data
     response = messagebox.askquestion("Clear database", 'Are you sure?')
     if response == 'yes':
@@ -614,7 +811,12 @@ def clear_database_popup():
 #         SAVE DATABASE COPY INTO ANOTHER FILE (Option 9) - Config
 # =============================================================================
 # Save copy into another file - window configuration - button 9
-def open_save_copy_window():
+def open_save_copy_window() -> None:
+    """
+    The function opens save copy window
+
+    :return: None
+    """
     save_copy_window = Toplevel(root)
     save_copy_window.iconbitmap(icon)
     save_copy_window.geometry('350x100')
@@ -631,7 +833,15 @@ def open_save_copy_window():
 
 
 # Saving copy in the new path
-def save_copy(new_file_name_arg, data_arg, window):
+def save_copy(new_file_name_arg: tkinter.Entry, data_arg: Dict, window: tkinter.Toplevel) -> None:
+    """
+    The function saves copy of data into input path
+
+    :param new_file_name_arg: tkinter.Entry
+    :param data_arg: Dict
+    :param window: tkinter.Toplevel
+    :return: None
+    """
     desktop = os.path.normpath(os.path.expanduser("~/Desktop"))
     new_file_name = desktop + "\\" + new_file_name_arg.get()
 
@@ -647,7 +857,12 @@ def save_copy(new_file_name_arg, data_arg, window):
 #                   SAVE DATA AND EXIT (Option 10) - Config
 # =============================================================================
 # Save data and exit - button 10
-def save_and_exit():
+def save_and_exit() -> None:
+    """
+    The function saves data and end ends the program
+
+    :return: None
+    """
     save_data(passwords_file_path, data)
     root.quit()
     messagebox.showinfo(title='Success', message='Data saved successfully')
@@ -657,7 +872,12 @@ def save_and_exit():
 #                            ROOT CONFIGURATION
 # =============================================================================
 # Root configuration
-def open_root():
+def open_root() -> None:
+    """
+    The function opens root and all root configuration
+
+    :return: None
+    """
     global root
     global b_choice_0, b_choice_1, b_choice_2, b_choice_3, b_choice_4, b_choice_5, b_choice_6, b_choice_7, b_choice_8, b_choice_9, b_choice_10
 
@@ -704,7 +924,7 @@ def open_root():
     root.grid_rowconfigure(12, weight=1)
 
 
-def main():
+def main() -> None:
     global data
 
     load_data()
